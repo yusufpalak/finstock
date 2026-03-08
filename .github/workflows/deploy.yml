@@ -83,10 +83,10 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
             # Yeni imajları çek
-            docker compose pull
+            docker-compose pull
 
             # Servisleri yeniden başlat (Sadece değişenleri günceller)
-            docker compose up -d --no-deps backend frontend nginx
+            docker-compose up -d --no-deps backend frontend nginx
 
             # Servislerin ayağa kalkması için bekleme ve sağlık kontrolü (Port 8182)
             echo "Servislerin ayağa kalkması bekleniyor..."
