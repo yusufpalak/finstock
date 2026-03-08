@@ -71,10 +71,15 @@ const form = ref({
 
 onMounted(() => {
   if (props.editing) {
-    Object.assign(form.value, props.editing)
-    // Format date for input
-    if (form.value.due_date) {
-      form.value.due_date = new Date(form.value.due_date).toISOString().slice(0, 10)
+    // Only copy safe editable fields — never include paid_at, status, id, etc.
+    form.value = {
+      customer_name: props.editing.customer_name || '',
+      amount: props.editing.amount || '',
+      currency: props.editing.currency || 'TRY',
+      due_date: props.editing.due_date
+        ? new Date(props.editing.due_date).toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+      description: props.editing.description || '',
     }
   }
 })

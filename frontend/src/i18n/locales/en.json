@@ -37,6 +37,9 @@
     "transactions": "Transactions",
     "no_data": "No data available",
     "profile": "Profile",
+    "clear": "Clear",
+    "optional": "optional",
+    "saved": "Saved",
     "app_name": "FinStock - Finance & Stock Tracking"
   },
   "nav": {
@@ -47,7 +50,8 @@
     "analytics": "Analytics",
     "currencies": "Currencies",
     "settings": "Settings",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "subscriptions": "Subscription Management"
   },
   "auth": {
     "login": "Log In",
@@ -60,12 +64,15 @@
     "register_title": "Create your account",
     "no_account": "Don't have an account?",
     "have_account": "Already have an account?",
-    "trial_hint": "14-day free trial — no credit card required"
+    "trial_hint": "14-day free trial — no credit card required",
+    "subscription_expired": "Your account has been cancelled or is past due. Please contact support."
   },
   "dashboard": {
     "title": "Overview",
     "today_income": "Today's Income",
     "today_expense": "Today's Expense",
+    "month_income": "Monthly Income",
+    "month_expense": "Monthly Expense",
     "month_profit": "Monthly Net Profit",
     "stock_alerts": "Stock Alerts",
     "overdue_receivables": "Overdue",
@@ -108,7 +115,9 @@
     "price": "Price",
     "unit": "Unit",
     "stock_quantity": "Stock Quantity",
-    "stock_alert_threshold": "Stock Alert Threshold"
+    "stock_alert_threshold": "Stock Alert Threshold",
+    "confirm": "Confirm",
+    "critical": "Critical"
   },
   "receivables": {
     "title": "Receivables",
@@ -122,7 +131,16 @@
     "mark_paid": "Mark as Paid",
     "outstanding": "Total Outstanding",
     "no_receivables": "No receivables found",
-    "confirm_payment": "Confirm Payment"
+    "confirm_payment": "Confirm Payment",
+    "enter_payment": "Enter Payment",
+    "pay_amount": "Payment Amount",
+    "payment_amount": "Amount to Pay",
+    "payment_date": "Payment Date",
+    "payment_notes": "Notes (Optional)",
+    "save_payment": "Save Payment",
+    "paid_so_far": "Paid",
+    "remaining": "Remaining",
+    "invalid_payment_amount": "Invalid amount. Cannot exceed remaining balance."
   },
   "company": {
     "settings": "Company Settings",
@@ -158,5 +176,24 @@
     "currency_name": "Currency Name",
     "buying": "Buying",
     "selling": "Selling"
+  },
+  "subscription": {
+    "title": "Subscription Management",
+    "subtitle": "Manage tenant subscriptions and plans",
+    "plan": "Plan",
+    "status": "Status",
+    "trial_end": "Trial End",
+    "period_end": "Period End",
+    "users": "users",
+    "plan_trial": "Trial",
+    "plan_basic": "Basic",
+    "plan_pro": "Pro",
+    "plan_unlimited": "Unlimited",
+    "status_trialing": "Trialing",
+    "status_active": "Active",
+    "status_unlimited": "Unlimited",
+    "status_past_due": "Past Due",
+    "status_cancelled": "Cancelled",
+    "update_success": "Subscription updated successfully"
   }
 }

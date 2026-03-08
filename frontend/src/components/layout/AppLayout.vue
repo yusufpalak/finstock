@@ -73,7 +73,12 @@ const navItems = computed(() => [
   { name: 'exchange-rates', icon: '💱', label: 'nav.currencies' },
   { name: 'profile', icon: '👤', label: 'common.profile' },
   { name: 'settings', icon: '⚙️', label: 'nav.settings', requiresRole: 'owner' },
-].filter(item => !item.requiresRole || auth.user?.role === item.requiresRole))
+  { name: 'subscriptions', icon: '🔑', label: 'nav.subscriptions', requiresRole: 'owner', requiresPlan: 'unlimited' },
+].filter(item => {
+  if (item.requiresRole && auth.user?.role !== item.requiresRole) return false
+  if (item.requiresPlan && auth.user?.plan !== item.requiresPlan) return false
+  return true
+}))
 
 function changeLocale(e) {
   const newLocale = e.target.value
@@ -94,17 +99,17 @@ function handleLogout() {
 .sidebar-header { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
 .logo { font-size: 18px; font-weight: 700; white-space: nowrap; overflow: hidden; }
 .trial-banner { background: #f59e0b; color: white; font-size: 12px; padding: 8px 12px; text-align: center; }
-.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
-.nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.2s; font-size: 14px; }
+.sidebar-nav { flex: 1; padding: 8px 0; overflow-y: hidden; display: flex; flex-direction: column; justify-content: flex-start; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 16px; color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.2s; font-size: 13px; }
 .nav-item:hover, .nav-item.router-link-active { background: var(--sidebar-hover); color: white; }
-.nav-icon { font-size: 18px; flex-shrink: 0; }
+.nav-icon { font-size: 16px; flex-shrink: 0; }
 .nav-label { white-space: nowrap; overflow: hidden; }
-.sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+.sidebar-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.1); }
 .user-info { margin-bottom: 8px; }
 .user-name { display: block; font-size: 13px; font-weight: 600; }
-.plan-badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; background: rgba(255,255,255,0.15); }
+.plan-badge { font-size: 10px; padding: 2px 7px; border-radius: 99px; background: rgba(255,255,255,0.15); }
 .plan-badge.pro { background: #f59e0b; color: #1e3a5f; }
-.logout-btn { width: 100%; padding: 8px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.logout-btn { width: 100%; padding: 7px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
 .logout-btn:hover { background: rgba(255,255,255,0.2); }
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .topbar { height: 56px; background: var(--header-bg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 24px; justify-content: space-between; flex-shrink: 0; }

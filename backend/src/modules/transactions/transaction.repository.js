@@ -28,7 +28,7 @@ export class TransactionRepository extends BaseRepository {
     return this.query(
       `SELECT transaction_date, type, SUM(amount_base) as total, currency, COUNT(*) as count
        FROM transactions WHERE tenant_id = ? AND transaction_date BETWEEN ? AND ?
-       GROUP BY transaction_date, type ORDER BY transaction_date ASC`,
+       GROUP BY transaction_date, type, currency ORDER BY transaction_date ASC`,
       [tenantId, startDate, endDate]
     );
   }

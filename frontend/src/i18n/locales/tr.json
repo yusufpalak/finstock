@@ -12,7 +12,6 @@
     "yes": "Evet",
     "no": "Hayır",
     "search": "Ara...",
-    "filter": "Filtrele",
     "export": "Dışa Aktar",
     "total": "Toplam",
     "actions": "İşlemler",
@@ -38,7 +37,11 @@
     "no_data": "Veri bulunamadı",
     "confirm_payment": "Ödemeyi Onayla",
     "profile": "Profil",
-    "app_name":"FinStock — Finans & Stok Takip"
+    "filter": "Filtrele",
+    "clear": "Temizle",
+    "optional": "isteğe bağlı",
+    "saved": "Kaydedildi",
+    "app_name": "FinStock — Finans & Stok Takip"
   },
   "nav": {
     "dashboard": "Panel",
@@ -48,6 +51,7 @@
     "analytics": "Analizler",
     "currencies": "Kurlar",
     "settings": "Ayarlar",
+    "subscriptions": "Abonelik Yönetimi",
     "logout": "Çıkış Yap"
   },
   "auth": {
@@ -61,12 +65,15 @@
     "register_title": "Hesap Oluşturun",
     "no_account": "Hesabınız yok mu?",
     "have_account": "Zaten hesabınız var mı?",
-    "trial_hint": "14 günlük ücretsiz deneme - kredi kartı gerekmez"
+    "trial_hint": "14 günlük ücretsiz deneme - kredi kartı gerekmez",
+    "subscription_expired": "Hesabınız iptal edilmiş veya vadesi geçmiş durumda. Lütfen destek ekibiyle iletişime geçin."
   },
   "dashboard": {
     "title": "Genel Bakış",
     "today_income": "Bugünkü Gelir",
     "today_expense": "Bugünkü Gider",
+    "month_income": "Aylık Gelir",
+    "month_expense": "Aylık Gider",
     "month_profit": "Aylık Net Kâr",
     "stock_alerts": "Stok Uyarısı",
     "overdue_receivables": "Vadesi Geçen",
@@ -109,7 +116,9 @@
     "price": "Fiyat",
     "unit": "Birim",
     "stock_quantity": "Stok Miktarı",
-    "stock_alert_threshold": "Stok Uyarı Eşiği"
+    "stock_alert_threshold": "Stok Uyarı Eşiği",
+    "confirm": "Onayla",
+    "critical": "Kritik"
   },
   "receivables": {
     "title": "Alacak Takibi",
@@ -122,7 +131,16 @@
     "partial": "Kısmi",
     "mark_paid": "Ödendi İşaretle",
     "outstanding": "Bekleyen Toplam",
-    "no_receivables": "Alacak kaydı yok"
+    "no_receivables": "Alacak kaydı yok",
+    "enter_payment": "Ödeme Gir",
+    "pay_amount": "Ödeme Tutarı",
+    "payment_amount": "Ödenecek Tutar",
+    "payment_date": "Ödeme Tarihi",
+    "payment_notes": "Not (İsteğe Bağlı)",
+    "save_payment": "Ödemeyi Kaydet",
+    "paid_so_far": "Ödenen",
+    "remaining": "Kalan",
+    "invalid_payment_amount": "Geçersiz tutar. Kalan borçtan fazla girilemez."
   },
   "company": {
     "settings": "Şirket Ayarları",
@@ -158,5 +176,24 @@
     "currency_name": "Döviz Cinsi",
     "buying": "Döviz Alış",
     "selling": "Döviz Satış"
+  },
+  "subscription": {
+    "title": "Abonelik Yönetimi",
+    "subtitle": "Tenant aboneliklerini ve planlarını buradan yönetin",
+    "plan": "Plan",
+    "status": "Durum",
+    "trial_end": "Deneme Bitiş",
+    "period_end": "Dönem Bitiş",
+    "users": "kullanıcı",
+    "plan_trial": "Deneme",
+    "plan_basic": "Temel",
+    "plan_pro": "Pro",
+    "plan_unlimited": "Sınırsız",
+    "status_trialing": "Denemede",
+    "status_active": "Aktif",
+    "status_unlimited": "Sınırsız",
+    "status_past_due": "Vadesi Geçmiş",
+    "status_cancelled": "İptal Edildi",
+    "update_success": "Abonelik başarıyla güncellendi"
   }
 }

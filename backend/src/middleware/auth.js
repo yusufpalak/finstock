@@ -37,15 +37,33 @@ export async function authenticate(request, reply) {
       const trialEnd = new Date(sub.trial_end);
       if (now > trialEnd) {
         await pool.query(
-          "UPDATE tenants SET plan = 'basic', status = 'active' WHERE id = ?",
+          "UPDATE tenants SET status = 'suspended' WHERE id = ?",
           [tenant.id]
         );
         await pool.query(
-          "UPDATE subscriptions SET status = 'active' WHERE tenant_id = ?",
+          "UPDATE subscriptions SET status = 'cancelled' WHERE tenant_id = ?",
           [tenant.id]
         );
-        tenant.plan = 'basic';
+        throw new ForbiddenError('SUBSCRIPTION_EXPIRED');
       }
+    }
+
+    // Auto-expire if current_period_end has passed
+    if (sub?.current_period_end && sub.status === 'active') {
+      const now = new Date();
+      const periodEnd = new Date(sub.current_period_end);
+      if (now > periodEnd) {
+        await pool.query(
+          "UPDATE subscriptions SET status = 'past_due' WHERE tenant_id = ?",
+          [tenant.id]
+        );
+        sub.status = 'past_due';
+      }
+    }
+
+    // Block access for past_due or cancelled subscriptions
+    if (sub?.status === 'past_due' || sub?.status === 'cancelled') {
+      throw new ForbiddenError('SUBSCRIPTION_EXPIRED');
     }
 
     // Inject into request

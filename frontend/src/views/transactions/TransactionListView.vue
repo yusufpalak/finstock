@@ -20,6 +20,7 @@
         <option value="expense">{{ t('transactions.expense') }}</option>
       </select>
       <button class="btn btn-secondary" @click="loadData">{{ t('common.filter') }}</button>
+      <button v-if="filters.startDate || filters.endDate || filters.type" class="btn btn-clear" @click="clearFilters">✕ {{ t('common.clear') }}</button>
     </div>
 
     <!-- Table -->
@@ -95,6 +96,11 @@ const rates = ref({})
 
 async function loadData() { await store.fetchAll(filters.value) }
 
+function clearFilters() {
+  filters.value = { startDate: '', endDate: '', type: '' }
+  loadData()
+}
+
 async function fetchRates() {
   try {
     const res = await api.get('/currencies/rates')
@@ -159,4 +165,6 @@ onMounted(() => {
 .icon-btn:hover { background: var(--bg-app); }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
 .upgrade-modal { background: white; border-radius: 16px; padding: 32px; max-width: 400px; text-align: center; }
+.btn-clear { background: transparent; border: 1px solid #ef4444; color: #ef4444; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn-clear:hover { background: #fef2f2; }
 </style>

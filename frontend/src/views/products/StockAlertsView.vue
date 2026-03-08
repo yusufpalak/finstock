@@ -14,7 +14,7 @@
     <div v-else class="alerts-grid">
       <div v-for="product in alerts" :key="product.id" class="alert-card">
         <div class="alert-header">
-          <span class="alert-badge">⚠️ Critical</span>
+          <span class="alert-badge">⚠️ {{ t('products.critical') }}</span>
           <span class="product-name">{{ product.name }}</span>
         </div>
         <div class="alert-stats">
@@ -45,7 +45,7 @@
         </div>
         <div class="modal-actions">
           <button @click="restocking = null" class="btn-cancel">{{ t('common.cancel') }}</button>
-          <button @click="confirmRestock" class="btn-confirm">{{ t('common.confirm') }}</button>
+          <button @click="confirmRestock" class="btn-confirm">{{ t('products.confirm') }}</button>
         </div>
       </div>
     </div>

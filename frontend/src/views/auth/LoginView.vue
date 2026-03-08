@@ -51,7 +51,12 @@ async function handleLogin() {
     await auth.login(form.value.email, form.value.password)
     router.push({ name: 'dashboard', params: { locale: locale.value } })
   } catch (err) {
-    error.value = err.response?.data?.error || t('common.error')
+    const msg = err.response?.data?.error
+    if (msg === 'SUBSCRIPTION_EXPIRED') {
+      error.value = t('auth.subscription_expired')
+    } else {
+      error.value = msg || t('common.error')
+    }
   } finally {
     loading.value = false
   }

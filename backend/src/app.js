@@ -65,6 +65,7 @@ export async function buildApp() {
   fastify.register(currencyRoutes, { prefix: '/api/v1/currencies' });
   fastify.register(import('./modules/users/user.routes.js').then(m => m.userRoutes), { prefix: '/api/v1/users' });
   fastify.register(import('./modules/tenants/tenant.routes.js').then(m => m.tenantRoutes), { prefix: '/api/v1/tenants' });
+  fastify.register(import('./modules/subscriptions/subscription.routes.js').then(m => m.subscriptionRoutes), { prefix: '/api/v1/subscriptions' });
 
   return fastify;
 }

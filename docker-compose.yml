@@ -1,71 +1,42 @@
 services:
-  mysql:
-    image: mysql:8.0
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./backend/src/migrations/001_schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
-    networks:
-      - app_network
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
   backend:
     build: ./backend
-    restart: unless-stopped
+    container_name: finstock-backend
+    restart: always
     env_file: .env
-    environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
-      - app_network
+      - finstock_net
+      - backend
 
   frontend:
     build:
       context: ./frontend
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
-        VITE_DEFAULT_LOCALE: ${VITE_DEFAULT_LOCALE:-tr}
-    restart: unless-stopped
+        VITE_API_BASE_URL: /api/v1
+        VITE_DEFAULT_LOCALE: tr
+    container_name: finstock-frontend
+    restart: always
     networks:
-      - app_network
+      - finstock_net
 
   nginx:
     image: nginx:alpine
     container_name: finstock-nginx
-    restart: unless-stopped
+    restart: always
     ports:
-      - "80:80"
+      - "8082:80"
     volumes:
-      - ./nginx/finstock.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/finstock.prod.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - backend
       - frontend
     networks:
-      - app_network
+      - finstock_net
+      - backend
 
 networks:
-  app_network:
-
-
-volumes:
-  mysql_data:
+  finstock_net:
+    driver: bridge
+  backend:
+    external: true
+    name: kernelasoft_backend

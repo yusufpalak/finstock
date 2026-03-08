@@ -16,7 +16,7 @@ class ReceivableRepository extends BaseRepository {
   async getSummary(tenantId) {
     const [rows] = await this.pool.query(
       `SELECT currency,
-        SUM(CASE WHEN status IN ('pending','partial') THEN amount ELSE 0 END) as outstanding,
+        SUM(CASE WHEN status IN ('pending','partial') THEN (amount - COALESCE(paid_amount, 0)) ELSE 0 END) as outstanding,
         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as collected,
         COUNT(CASE WHEN status IN ('pending','partial') AND due_date < CURDATE() THEN 1 END) as overdue_count
        FROM receivables WHERE tenant_id = ? GROUP BY currency`,
@@ -64,12 +64,32 @@ class ReceivableService {
   async update(tenantId, id, data) {
     const rec = await repo.findByIdOrFail(tenantId, id);
     const updated = { ...data };
-    if (data.paid_at) updated.status = 'paid';
-    else if (rec.status !== 'paid') {
+    // Convert ISO date strings to MySQL-compatible DATE format (YYYY-MM-DD)
+    if (updated.paid_at) {
+      updated.paid_at = new Date(updated.paid_at).toISOString().slice(0, 10);
+      updated.status = 'paid';
+    } else if (rec.status !== 'paid') {
       const due = new Date(rec.due_date);
       updated.status = new Date() > due ? 'overdue' : rec.status;
     }
+    if (updated.due_date) {
+      updated.due_date = new Date(updated.due_date).toISOString().slice(0, 10);
+    }
     return repo.update(tenantId, id, updated);
+  }
+
+  async recordPayment(tenantId, id, { amount, paid_at, notes }) {
+    const rec = await repo.findByIdOrFail(tenantId, id);
+    const paymentDate = paid_at ? new Date(paid_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+    const newPaidAmount = parseFloat(((rec.paid_amount || 0) + parseFloat(amount)).toFixed(4));
+    const remaining = parseFloat((rec.amount - newPaidAmount).toFixed(4));
+    const newStatus = remaining <= 0 ? 'paid' : 'partial';
+    const updateData = {
+      paid_amount: newPaidAmount,
+      status: newStatus,
+    };
+    if (newStatus === 'paid') updateData.paid_at = paymentDate;
+    return repo.update(tenantId, id, updateData);
   }
 
   async delete(tenantId, id) {
@@ -98,5 +118,14 @@ export async function receivableRoutes(fastify) {
   });
 
   fastify.put('/:id', async (req) => ({ success: true, data: await svc.update(req.tenantId, req.params.id, req.body) }));
+
+  fastify.post('/:id/payment', async (req, reply) => {
+    if (!req.body.amount || req.body.amount <= 0) {
+      return reply.code(400).send({ success: false, error: 'Valid amount required' });
+    }
+    const data = await svc.recordPayment(req.tenantId, req.params.id, req.body);
+    return { success: true, data };
+  });
+
   fastify.delete('/:id', async (req) => { await svc.delete(req.tenantId, req.params.id); return { success: true }; });
 }

@@ -57,7 +57,9 @@ export class BaseRepository {
   }
 
   async create(tenantId, data) {
-    const payload = { ...data, tenant_id: tenantId };
+    // Strip timestamp fields — DB handles them automatically
+    const { created_at, updated_at, ...rest } = data;
+    const payload = { ...rest, tenant_id: tenantId };
     const [result] = await this.pool.query(
       `INSERT INTO ${this.table} SET ?`,
       [payload]
@@ -66,9 +68,11 @@ export class BaseRepository {
   }
 
   async update(tenantId, id, data) {
+    // Strip timestamp fields — DB handles them automatically
+    const { created_at, updated_at, id: _id, tenant_id: _tid, ...rest } = data;
     await this.pool.query(
       `UPDATE ${this.table} SET ? WHERE tenant_id = ? AND id = ?`,
-      [data, tenantId, id]
+      [rest, tenantId, id]
     );
     return this.findByIdOrFail(tenantId, id);
   }

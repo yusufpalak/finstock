@@ -22,6 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(email, password) {
     const { data } = await axios.post(`${BASE}/auth/login`, { email, password })
     setSession(data.data)
+    await fetchMe()      // fetch full profile (incl. plan) right after login
     return data.data
   }
 

@@ -60,6 +60,46 @@ export class AuthService {
 
     if (user.tenant_status === 'suspended') throw new UnauthorizedError('Account suspended');
 
+    // Check subscription status at login time
+    const pool = (await import('../../config/database.js')).getPool();
+    const [[sub]] = await pool.query(
+      'SELECT status, trial_end, current_period_end FROM subscriptions WHERE tenant_id = ? LIMIT 1',
+      [user.tenant_id]
+    );
+
+    if (sub) {
+      // Trial expired → suspend
+      if (sub.status === 'trialing' && sub.trial_end) {
+        const now = new Date();
+        if (now > new Date(sub.trial_end)) {
+          await pool.query(
+            "UPDATE tenants SET status = 'suspended' WHERE id = ?",
+            [user.tenant_id]
+          );
+          await pool.query(
+            "UPDATE subscriptions SET status = 'cancelled' WHERE tenant_id = ?",
+            [user.tenant_id]
+          );
+          throw new UnauthorizedError('SUBSCRIPTION_EXPIRED');
+        }
+      }
+      // Auto-expire if period_end passed
+      if (sub.status === 'active' && sub.current_period_end) {
+        const now = new Date();
+        if (now > new Date(sub.current_period_end)) {
+          await pool.query(
+            "UPDATE subscriptions SET status = 'past_due' WHERE tenant_id = ?",
+            [user.tenant_id]
+          );
+          sub.status = 'past_due';
+        }
+      }
+      // Block login for expired or cancelled accounts
+      if (sub.status === 'past_due' || sub.status === 'cancelled') {
+        throw new UnauthorizedError('SUBSCRIPTION_EXPIRED');
+      }
+    }
+
     await repo.updateLastLogin(user.id);
 
     const accessToken = fastify.jwt.sign(

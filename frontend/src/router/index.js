@@ -27,6 +27,7 @@ const router = createRouter({
         { path: 'currencies', name: 'exchange-rates', component: () => import('@/views/currencies/ExchangeRatesView.vue') },
         { path: 'profile', name: 'profile', component: () => import('@/views/settings/ProfileView.vue') },
         { path: 'settings', name: 'settings', component: () => import('@/views/settings/SettingsView.vue'), meta: { requiresRole: 'owner' } },
+        { path: 'subscriptions', name: 'subscriptions', component: () => import('@/views/subscription/SubscriptionManagementView.vue'), meta: { requiresRole: 'owner', requiresPlan: 'unlimited' } },
       ]
     },
 
@@ -49,6 +50,10 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresRole && auth.user?.role !== to.meta.requiresRole) {
+    return next({ name: 'dashboard', params: { locale: locale || DEFAULT_LOCALE } })
+  }
+
+  if (to.meta.requiresPlan && auth.user?.plan !== to.meta.requiresPlan) {
     return next({ name: 'dashboard', params: { locale: locale || DEFAULT_LOCALE } })
   }
 

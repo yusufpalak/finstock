@@ -48,7 +48,10 @@
         <tbody>
           <tr v-for="item in filteredReceivables" :key="item.id">
             <td><strong>{{ item.customer_name }}</strong></td>
-            <td>{{ formatCurrency(item.amount, item.currency) }}</td>
+            <td>
+              <div>{{ formatCurrency(item.amount, item.currency) }}</div>
+              <div v-if="item.paid_amount > 0" class="paid-info">{{ t('receivables.paid_so_far') }}: {{ formatCurrency(item.paid_amount, item.currency) }}</div>
+            </td>
             <td :class="{ overdue: isOverdue(item) }">{{ formatDate(item.due_date) }}</td>
             <td>
               <span class="status-badge" :class="item.status">
@@ -56,12 +59,13 @@
               </span>
             </td>
             <td class="actions">
+              <button v-if="item.status !== 'paid'" class="btn-icon btn-payment" @click="openPayment(item)" :title="t('receivables.enter_payment')">💳</button>
               <button v-if="item.status !== 'paid'" class="btn-icon" @click="markAsPaid(item)" :title="t('receivables.mark_paid')">✅</button>
               <button class="btn-icon" @click="openModal(item)">✏️</button>
               <button class="btn-icon delete" @click="handleDelete(item)">🗑️</button>
             </td>
           </tr>
-          <tr v-if="!receivables.length" class="empty-row">
+          <tr v-if="!filteredReceivables.length" class="empty-row">
             <td colspan="5">{{ t('receivables.no_receivables') }}</td>
           </tr>
         </tbody>
@@ -70,6 +74,7 @@
 
     <!-- Modals -->
     <ReceivableFormModal v-if="showModal" :editing="editingItem" @close="showModal = false" @saved="onSaved" />
+    <PaymentModal v-if="paymentItem" :item="paymentItem" @close="paymentItem = null" @saved="onSaved" />
   </div>
 </template>
 
@@ -79,6 +84,7 @@ import { useI18n } from 'vue-i18n'
 import { useFormatters } from '@/composables/useFormatters'
 import api from '@/services/api'
 import ReceivableFormModal from './ReceivableFormModal.vue'
+import PaymentModal from './PaymentModal.vue'
 
 const { t } = useI18n()
 const { formatCurrency, formatDate } = useFormatters()
@@ -88,6 +94,7 @@ const summary = ref([])
 const loading = ref(false)
 const showModal = ref(false)
 const editingItem = ref(null)
+const paymentItem = ref(null)
 
 const filters = reactive({
   search: '',
@@ -97,7 +104,13 @@ const filters = reactive({
 const filteredReceivables = computed(() => {
   return receivables.value.filter(item => {
     const matchesSearch = item.customer_name.toLowerCase().includes(filters.search.toLowerCase())
-    const matchesStatus = !filters.status || item.status === filters.status
+    // Overdue: match both stored status='overdue' AND items where due_date has passed but status is still pending/partial
+    let matchesStatus = true
+    if (filters.status === 'overdue') {
+      matchesStatus = item.status === 'overdue' || (item.status !== 'paid' && new Date(item.due_date) < new Date())
+    } else {
+      matchesStatus = !filters.status || item.status === filters.status
+    }
     return matchesSearch && matchesStatus
   })
 })
@@ -147,8 +160,13 @@ function openModal(item) {
   showModal.value = true
 }
 
+function openPayment(item) {
+  paymentItem.value = item
+}
+
 function onSaved() {
   showModal.value = false
+  paymentItem.value = null
   fetchData()
 }
 
@@ -189,6 +207,8 @@ onMounted(fetchData)
 .btn-icon { background: none; border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; cursor: pointer; color: var(--text-main); }
 .btn-icon:hover { background: var(--bg-app); }
 .btn-icon.delete:hover { border-color: #fca5a5; }
+.btn-icon.btn-payment:hover { border-color: #86efac; }
+.paid-info { font-size: 11px; color: #16a34a; margin-top: 2px; }
 
 .btn-primary { background: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600; cursor: pointer; }
 .empty-row td { text-align: center; padding: 40px !important; color: var(--text-muted); }
