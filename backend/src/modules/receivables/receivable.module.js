@@ -8,7 +8,7 @@ class ReceivableRepository extends BaseRepository {
 
   async getOverdue(tenantId) {
     return this.query(
-      `SELECT * FROM receivables WHERE tenant_id = ? AND status IN ('pending','partial') AND due_date < CURDATE() ORDER BY due_date ASC`,
+      `SELECT * FROM receivables WHERE tenant_id = ? AND status IN ('pending','partial','overdue') AND due_date < CURDATE() ORDER BY due_date ASC`,
       [tenantId]
     );
   }
@@ -16,9 +16,9 @@ class ReceivableRepository extends BaseRepository {
   async getSummary(tenantId) {
     const [rows] = await this.pool.query(
       `SELECT currency,
-        SUM(CASE WHEN status IN ('pending','partial') THEN (amount - COALESCE(paid_amount, 0)) ELSE 0 END) as outstanding,
+        SUM(CASE WHEN status IN ('pending','partial','overdue') THEN (amount - COALESCE(paid_amount, 0)) ELSE 0 END) as outstanding,
         SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as collected,
-        COUNT(CASE WHEN status IN ('pending','partial') AND due_date < CURDATE() THEN 1 END) as overdue_count
+        COUNT(CASE WHEN status IN ('pending','partial','overdue') AND due_date < CURDATE() THEN 1 END) as overdue_count
        FROM receivables WHERE tenant_id = ? GROUP BY currency`,
       [tenantId]
     );

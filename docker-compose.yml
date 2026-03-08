@@ -20,7 +20,7 @@ services:
     container_name: finstock-nginx
     restart: always
     ports:
-      - "8182:80"
+      - "8082:80"
     volumes:
       - ./nginx/finstock.prod.conf:/etc/nginx/nginx.conf:ro
     depends_on:

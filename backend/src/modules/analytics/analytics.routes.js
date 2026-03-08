@@ -36,7 +36,7 @@ export async function analyticsRoutes(fastify) {
       `SELECT 
         SUM(amount_base - COALESCE(paid_amount, 0)) as total_outstanding,
         COUNT(CASE WHEN due_date < CURDATE() THEN 1 END) as overdue_count
-       FROM receivables WHERE tenant_id = ? AND status IN ('pending','partial')`,
+       FROM receivables WHERE tenant_id = ? AND status IN ('pending','partial','overdue')`,
       [tenantId]
     );
 

@@ -9,3 +9,6 @@ dist/
 .agent/
 .agents/
 brain/
+.env.prod
+docker-compose.yml
+docker-compose.local.yml
