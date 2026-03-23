@@ -36,7 +36,7 @@ export class AuthService {
       email,
       password_hash: passwordHash,
       name,
-      role: 'owner',
+      role: 'staff',
       locale,
     });
 
